@@ -120,20 +120,22 @@ jobs:
       - name: Trivy - bloqueia em CRITICAL/HIGH
         uses: aquasecurity/trivy-action@0.36.0
         with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           scan-type: 'fs'
           scan-ref: '.'
-          severity: 'CRITICAL,HIGH'
+          severity: 'HIGH,CRITICAL'
           exit-code: '1'
           format: 'sarif'
-          output: 'trivy-fs-results.sarif'
+          output: 'trivy-image-results.sarif'
 
       - name: Trivy - relatorio informativo (nao bloqueia)
         if: always()
         uses: aquasecurity/trivy-action@0.36.0
         with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           scan-type: 'fs'
           scan-ref: '.'
-          severity: 'MEDIUM,LOW'
+          severity: 'LOW,MEDIUM'
           exit-code: '0'
           format: 'table'
 
@@ -141,6 +143,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           name: relatorio-trivy-dependencias
           path: trivy-fs-results.sarif
           if-no-files-found: ignore
@@ -189,7 +192,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
-          severity: 'CRITICAL,HIGH'
+          severity: 'HIGH,CRITICAL'
           exit-code: '1'
           format: 'sarif'
           output: 'trivy-image-results.sarif'
